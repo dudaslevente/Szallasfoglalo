@@ -46,7 +46,7 @@ export class BookingsComponent implements OnInit{
         bookings.bookingDate = moment(bookings.bookingDate).format('YYYY-MM-DD');
         bookings.bookingDate = moment(bookings.bookingDate).format('YYYY-MM-DD');
 
-        bookings.accomAddr = this.accoms.find(item => item.id == bookings.accomID)!.title;
+        bookings.accomName = this.accoms.find(item => item.id == bookings.accomID)!.title;
         bookings.accomAddr = this.accoms.find(item => item.id == bookings.accomID)!.address;
       })
     });
