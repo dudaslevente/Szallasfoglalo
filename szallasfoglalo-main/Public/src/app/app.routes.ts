@@ -31,7 +31,7 @@ export const routes: Routes = [
   },
 
 
-  
+
 
   {
     path: 'logout', component: LogoutComponent
@@ -39,6 +39,8 @@ export const routes: Routes = [
   {
     path: 'bookings', component: BookingsComponent
   },
+
+  
   {
     path: 'admin',
     children: [
