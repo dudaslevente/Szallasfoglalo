@@ -48,7 +48,7 @@ export class BookingsComponent implements OnInit{
 
         bookings.accomName = this.accoms.find(item => item.id == bookings.accomID)!.title;
         bookings.accomAddr = this.accoms.find(item => item.id == bookings.accomID)!.address;
-      })
+      });
     });
   }
 
