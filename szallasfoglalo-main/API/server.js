@@ -11,11 +11,14 @@ const express = require('express');
 var mysql = require('mysql');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const nodemailer = require("nodemailer");
+const path = require("path");
 const multer  = require('multer');
 const nodemailer = require("nodemailer");
 const ejs  = require('ejs');
 const uuid = require('uuid');
 var CryptoJS = require("crypto-js");
+const path = require('path');
 const passwdRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const app = express();
 const port = process.env.PORT;
@@ -34,7 +37,45 @@ var pool  = mysql.createPool({
     database        : process.env.DBNAME
 });
 
+//NODEMAILER CONFIG
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: true, // true for port 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+});
+
 // APP ROUTES
+
+//send email
+app.post('/send', async (req, res) => {
+    const {to, subject, content, template, data} = req.body;
+    
+
+    const templatePath = path.join(__dirname, 'template', template + '.ejs');
+    ejs.renderFile(templatePath, {content}, async (err, html) => {
+        if(err){
+            return res.send('Error rendering email template!');
+        }
+
+        const mailOption = {
+            from: '"Szállásfoglaló App <' + process.env.SMTP_USER + '>"',
+            to:  to,
+            subject: subject,
+            html: html
+        }
+        
+        try {
+            result = await transporter.sendMail(mailOption);
+            res.send(result.response);
+        } catch(error){
+            res.send(error);
+        }
+    });
+});
 
 // user login
 app.post('/login/:table', (req, res)=>{
@@ -119,7 +160,7 @@ app.post('/reg/:table', (req, res)=>{
             res.status(203).send({ message: 'Ez az e-mail cím már regisztrálva van!', invalid: invalidFields });
             return
         }
-        pool.query(`INSERT INTO ${table} (id, name, email, passwd, role) VALUES('${uuid.v4()}', '${name}', '${email}', SHA1('${passwd}'), 'user')`, (err, results)=>{
+        pool.query(`INSERT INTO ${table} (id, name, email, passwd, role) VALUES('${uuid.v4()}', '${name}', '${email}', SHA1('${passwd}'), 'user', '${uuid.v4()})`, (err, results)=>{
             if (err){
                 res.status(500).send(err);
                 return

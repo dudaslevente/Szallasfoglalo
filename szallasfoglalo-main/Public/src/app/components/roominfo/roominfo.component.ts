@@ -57,7 +57,7 @@ export class RoominfoComponent implements OnInit{
 
     this.roomID = this.activatedRoute.snapshot.params['id'];
 
-    this.api.read('accomodations', this.roomID).subscribe(res =>{
+    this.api.read('accomodations', 'id', 'eq', this.roomID).subscribe(res =>{
       if (res){
         this.room = (res as Room[])[0];
       }

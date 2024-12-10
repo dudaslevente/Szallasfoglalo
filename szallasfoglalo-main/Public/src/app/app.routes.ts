@@ -11,6 +11,7 @@ import { ManageBookingsComponent } from './components/manage-bookings/manage-boo
 import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.component';
 import { UserAuthGuards } from './guards/user-auth.guard';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
+import { ManageUsersComponent } from './components/manage-users/manage-users.component';
 
 export const routes: Routes = [
   {
@@ -36,7 +37,7 @@ export const routes: Routes = [
 
 
   {
-    path: 'logout', component: LogoutComponent
+    path: 'logout', component: LogoutComponent, canActivate: [UserAuthGuards]
   },
   {
     path: 'bookings', component: BookingsComponent, canActivate: [UserAuthGuards]
@@ -51,6 +52,9 @@ export const routes: Routes = [
       },
       {
         path: 'bookings', component: ManageBookingsComponent
+      },
+      {
+        path: 'users', component: ManageUsersComponent
       }
     ]
   },

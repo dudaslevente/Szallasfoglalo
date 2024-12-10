@@ -33,8 +33,8 @@ export class ApiService {
     return this.http.post(this.server + '/login/' + table, data);
   }
 
-  read(table:string, id:string){
-    return this.http.get(this.server + '/public/'+table+'/id/eq/'+id);
+  read(table: string, field:string, op:string, value:string){
+    return this.http.get(this.server + '/'+table+'/'+field+'/'+op+'/'+value);
   }
 
   readAll(table: string){
@@ -63,4 +63,7 @@ export class ApiService {
     return this.http.delete(this.server + '/'+table+'/id/eq/'+id, this.tokenHeader());
   }
 
+  sendMail(data:object){
+    return this.http.post(this.server + '/send', data);
+  }
 }
