@@ -30,14 +30,14 @@ export class LostpassComponent {
         to: this.email,
         subject: "Elfelejtett jelszó visszaállítása",
         content: {
-            ink: "http://localhost:4200/lostpass/" + res[0].id + "/" + res[0].secret
+            ink: "http://localhost:4200/restorepass/" + res[0].id + "/" + res[0].secret
           },
         template: "lostpass"
       }
 
       this.api.sendMail(data).subscribe((res:any) => {
-        this.message.showMessage('Üzenet', res, 'info');
-        return;
+        this.message.showMessage('Üzenet', res.message, 'info');
+        this.email = "";
       });
     });
   }

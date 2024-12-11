@@ -12,9 +12,7 @@ var mysql = require('mysql');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
-const path = require("path");
 const multer  = require('multer');
-const nodemailer = require("nodemailer");
 const ejs  = require('ejs');
 const uuid = require('uuid');
 var CryptoJS = require("crypto-js");
@@ -52,13 +50,13 @@ const transporter = nodemailer.createTransport({
 
 //send email
 app.post('/send', async (req, res) => {
-    const {to, subject, content, template, data} = req.body;
+    const {to, subject, content, template} = req.body;
     
 
     const templatePath = path.join(__dirname, 'template', template + '.ejs');
     ejs.renderFile(templatePath, {content}, async (err, html) => {
         if(err){
-            return res.send('Error rendering email template!');
+            return res.send({message: 'Error rendering email template!'});
         }
 
         const mailOption = {
@@ -70,9 +68,9 @@ app.post('/send', async (req, res) => {
         
         try {
             result = await transporter.sendMail(mailOption);
-            res.send(result.response);
+            res.send({message: 'Az email elküldve'});
         } catch(error){
-            res.send(error);
+            res.send({message: error});
         }
     });
 });
@@ -204,6 +202,36 @@ app.get('/public/:table/:field/:op/:value', (req, res)=>{
     }
 
     pool.query(`SELECT * FROM ${table} WHERE ${field}${op}'${value}'`,  (err, results)=>{
+        sendResults(res, err, results);
+    });
+});
+
+app.patch('/public/:table/:field/:op/:value', (req, res)=>{
+    let table = req.params.table;
+
+    const public_tables = process.env.PUBLIC_TABLES.split(',');
+
+    if (!public_tables.includes(table)){
+        sendResults(res, '', {message: 'Nincs jogosultság hozzá!'});
+        return
+    }
+
+    let field = req.params.field;
+    let value = req.params.value;
+    let op = getOP(req.params.op);
+    if (req.params.op == 'lk'){
+        value = `%${value}%`;
+    }
+
+    let fields = Object.keys(req.body);
+    let values = Object.values(req.body);
+    let updates = [];
+    for (let i = 0; i < fields.length; i++) {
+        updates.push(`${fields[i]}='${values[i]}'`);
+    }
+    
+    let str = updates.join(',');    
+    pool.query(`UPDATE ${table} SET ${str} WHERE ${field}${op}'${value}'`, (err, results)=>{
         sendResults(res, err, results);
     });
 });

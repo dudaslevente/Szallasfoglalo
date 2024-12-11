@@ -12,6 +12,7 @@ import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.com
 import { UserAuthGuards } from './guards/user-auth.guard';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { ManageUsersComponent } from './components/manage-users/manage-users.component';
+import { RestorepassComponent } from './components/restorepass/restorepass.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,9 @@ export const routes: Routes = [
   },
   {
     path: 'lostpass', component: LostpassComponent
+  },
+  {
+    path: 'restorepass/:userID/:sercet', component: RestorepassComponent
   },
   {
     path: 'rooms', component: RoomsComponent
